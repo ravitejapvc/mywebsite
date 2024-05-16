@@ -1,7 +1,72 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <body>
-        <h1>Hello world from raviteja</h1>
-        <button>hello</button>
-    </body>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+  <style>
+    /* You can add basic styles here for the input, button, and list items */
+  </style>
 </head>
+<body>
+  <h1>To-Do List</h1>
+  <input type="text" id="new-todo" placeholder="Enter new todo...">
+  <button id="add-button">Add</button>
+  <ul id="todo-list"></ul>
+
+  <script>
+    const todoList = document.getElementById('todo-list');
+    const newTodoInput = document.getElementById('new-todo');
+    const addButton = document.getElementById('add-button');
+
+    function getTodoListFromLocalStorage() {
+      let storedTodos = localStorage.getItem('todos');
+      if (storedTodos) {
+        return JSON.parse(storedTodos);
+      } else {
+        return []; // Return an empty array if no data is stored
+      }
+    }
+
+    function setTodoListToLocalStorage(todoList) {
+      localStorage.setItem('todos', JSON.stringify(todoList));
+    }
+
+    function addTodo(text) {
+      const newTodoItem = document.createElement('li');
+      newTodoItem.innerText = text;
+
+      // Add event listener for removing a todo item (optional)
+      newTodoItem.addEventListener('click', function() {
+        this.remove();
+        updateTodoList(); // Update the list in storage on removal
+      });
+
+      todoList.appendChild(newTodoItem);
+      updateTodoList(); // Update the list in storage on addition
+    }
+
+    function updateTodoList() {
+      const currentTodos = Array.from(todoList.children).map(item => item.innerText);
+      setTodoListToLocalStorage(currentTodos);
+    }
+
+    function displayTodoList() {
+      todoList.innerHTML = ''; // Clear the list before displaying
+      const storedTodos = getTodoListFromLocalStorage();
+      storedTodos.forEach(todo => addTodo(todo));
+    }
+
+    // Load the to-do list from storage on initial page load
+    displayTodoList();
+
+    addButton.addEventListener('click', function() {
+      const newTodoText = newTodoInput.value.trim();
+      if (newTodoText) {
+        addTodo(newTodoText);
+        newTodoInput.value = ''; // Clear the input field after adding
+      }
+    });
+  </script>
+</body>
+</html>
